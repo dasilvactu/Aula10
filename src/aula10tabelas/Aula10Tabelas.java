@@ -5,6 +5,8 @@
  */
 package aula10tabelas;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JFrame;
 
 /**
@@ -17,11 +19,25 @@ public class Aula10Tabelas {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        JanelaTabela janela = new JanelaTabela();
+        List<Pessoa> dados = getSampleData();
+        JanelaTabela janela = new JanelaTabela(dados);
         janela.setSize(400,300);
         janela.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         janela.setLocationRelativeTo(null);
         janela.setVisible(true);
+    }
+
+    private static List<Pessoa> getSampleData() {
+        List<Pessoa> pessoas = new ArrayList<Pessoa>(){
+            {
+                add(new Pessoa("Fulano",18,"fulano@gmail.com"));
+                add(new Pessoa("Beltrano",19,"beltrano@gmail.com"));
+                add(new Pessoa("Ciclano",20,"ciclano@gmail.com"));
+            }
+        };
+        
+        return pessoas;
+        
     }
     
 }

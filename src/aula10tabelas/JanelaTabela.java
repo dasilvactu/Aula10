@@ -10,6 +10,7 @@ import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -35,17 +36,13 @@ public class JanelaTabela extends JFrame{
    private JButton btnAdicionar = new JButton("Adicionar");
    private JButton btnSalvar = new JButton("Salvar");
    private JButton btnRemover = new JButton("Remover");
-   public JanelaTabela() throws HeadlessException {
+   private List<Pessoa> dados;
+   public JanelaTabela(List<Pessoa> dados) throws HeadlessException {
         super("Tabelas 01");
-        Object[][] dados = new Object[][]{
-            {"Fulano","18","fulano@somedomain.com"},
-            {"Beltrano","19","beltrano@somedomain.com"},
-            {"Ciclano","20","ciclano@somedomain.com"}
-                          
-        };
+        this.dados = dados;
         Object[] titulos = new Object[]{"Nome", "Idade","E-mail"};
         
-        tabela= new JTable(new DefaultTableModel(dados, titulos));
+        tabela= new JTable(new PessoaTableModel(dados));
         btnRemover.setEnabled(false);
         btnSalvar.setEnabled(false);
         JPanel formulario = new JPanel();
@@ -72,10 +69,10 @@ public class JanelaTabela extends JFrame{
                     btnAdicionar.setEnabled(false);
                     btnSalvar.setEnabled(true);
                     btnRemover.setEnabled(true);
-                    DefaultTableModel modelo = (DefaultTableModel)tabela.getModel();
+                    PessoaTableModel modelo = (PessoaTableModel)tabela.getModel();
                     int linha = tabela.getSelectedRow();
                     txtNome.setText((String)modelo.getValueAt(linha, 0));
-                    txtIdade.setText((String)modelo.getValueAt(linha, 1));
+                    txtIdade.setText(modelo.getValueAt(linha, 1).toString());
                     txtEmail.setText((String)modelo.getValueAt(linha, 2));
                 }
             }
@@ -83,12 +80,13 @@ public class JanelaTabela extends JFrame{
         btnAdicionar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DefaultTableModel modelo = (DefaultTableModel)tabela.getModel();
-                modelo.addRow(new Object[]{
+                PessoaTableModel modelo = (PessoaTableModel)tabela.getModel();
+                Pessoa p = new Pessoa(
                     txtNome.getText(),
-                    txtIdade.getText(),
-                    txtEmail.getText()
-                });
+                    Integer.parseInt(txtIdade.getText()),
+                    txtEmail.getText());
+                modelo.add(p);
+             
                 txtNome.setText("");
                 txtIdade.setText("");
                 txtEmail.setText("");
@@ -99,8 +97,29 @@ public class JanelaTabela extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(tabela.getSelectedRowCount()==0) return;
-                DefaultTableModel modelo = (DefaultTableModel)tabela.getModel();
-                modelo.removeRow(tabela.getSelectedRow());
+                PessoaTableModel modelo = (PessoaTableModel)tabela.getModel();
+                modelo.remove(tabela.getSelectedRow());
+                txtNome.setText("");
+                txtIdade.setText("");
+                txtEmail.setText("");
+                txtNome.requestFocus();
+            }
+        });
+        btnSalvar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(tabela.getSelectedRowCount()==0) return;
+                PessoaTableModel modelo = (PessoaTableModel)tabela.getModel();
+                int linha = tabela.getSelectedRow();
+                modelo.setValueAt(txtNome.getText(), linha, 0);
+                modelo.setValueAt(txtIdade.getText(), linha, 1);
+                modelo.setValueAt(txtEmail.getText(), linha, 2);
+                txtNome.setText("");
+                txtIdade.setText("");
+                txtEmail.setText("");
+                tabela.clearSelection();
+                txtNome.requestFocus();
+                
             }
         });
         
